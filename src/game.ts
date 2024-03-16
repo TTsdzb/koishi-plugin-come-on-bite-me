@@ -48,11 +48,6 @@ export interface Game {
   players: Player[];
 
   /**
-   * The very first player who joined the game.
-   */
-  host: Player;
-
-  /**
    * Current player.
    */
   current: number;
@@ -71,7 +66,6 @@ export function newGame(host: Player): Game {
   return {
     currentState: GameState.joining,
     players: [host],
-    host,
     current: 0,
     polledBully: 0,
   };

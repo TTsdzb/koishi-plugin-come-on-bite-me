@@ -5,12 +5,18 @@ commands:
     join:
       description: 加入一局游戏。当前群聊已在进行游戏时无法使用。
       messages:
-        newGameCreated: "<quote id={messageId} /> <at id={userId} /> 创建了一局新游戏。"
-        alreadyInGame: "<quote id={messageId} /> <at id={userId} /> 你已经在游戏中了。"
-        gameJoined: "<quote id={messageId} /> <at id={userId} /> 加入游戏成功！当前参加人数：{0}"
+        newGameCreated: "创建了一局新游戏。"
+        alreadyInGame: "你已经在游戏中了。"
+        gameJoined: "加入游戏成功！当前参加人数：{0}"
+        gameAlreadyStarted: "游戏已经开始，无法加入。请等待下一局。"
 
     quit:
       description: 退出游戏。当前群聊已在进行游戏时无法使用。
+      messages:
+        gameNotJoined: "你还没有加入游戏。"
+        gameQuit: "你已退出游戏，当前参加人数：{0}"
+        gameQuitAndAbort: "你已退出游戏，游戏终止。"
+        gameAlreadyStarted: "游戏已经开始，无法退出。"
 
     start:
       description: 开始一局游戏。游戏需要至少三人参加才能进行，且只有第一个加入的玩家可以开始。
