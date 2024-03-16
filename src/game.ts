@@ -1,5 +1,3 @@
-import { User } from "koishi";
-
 /**
  * Represent the state of a game.
  */
@@ -12,37 +10,27 @@ enum GameState {
 /**
  * Class to record all information of a game.
  */
-export class Game {
+export interface Game {
   /**
    * State of the game.
    */
   currentState: GameState;
 
   /**
-   * All participated players in the game.
+   * All participated players' user id in the game.
    */
-  players: User[];
+  players: string[];
 
   /**
    * The very first player who joined the game.
    */
-  host: User;
+  host: string;
+}
 
-  /**
-   * Create a game with a given host.
-   * @param host User who triggered game creation
-   */
-  constructor(host: User) {
-    this.currentState = GameState.joining;
-    this.players = [host];
-    this.host = host;
-  }
-
-  /**
-   * Join a player to this game.
-   * @param player User who wants to join the game
-   */
-  join(player: User) {
-    this.players.push(player);
-  }
+/**
+ * Create a game with a given host.
+ * @param host User id of whom triggered game creation
+ */
+export function newGame(host: string): Game {
+  return { currentState: GameState.joining, players: [host], host };
 }

@@ -4,6 +4,10 @@ commands:
 
     join:
       description: 加入一局游戏。当前群聊已在进行游戏时无法使用。
+      messages:
+        newGameCreated: "<quote id={messageId} /> <at id={userId} /> 创建了一局新游戏。"
+        alreadyInGame: "<quote id={messageId} /> <at id={userId} /> 你已经在游戏中了。"
+        gameJoined: "<quote id={messageId} /> <at id={userId} /> 加入游戏成功！当前参加人数：{0}"
 
     quit:
       description: 退出游戏。当前群聊已在进行游戏时无法使用。
@@ -31,3 +35,6 @@ commands:
 
     replace:
       description: 参与游戏的玩家在轮到自己行动时使用，表示弃牌重抽。
+
+    messages:
+      pleaseUseInGuilds: 请在群聊中使用。
