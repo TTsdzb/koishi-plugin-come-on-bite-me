@@ -1,0 +1,33 @@
+commands:
+  cobm:
+    description: “你咬我啊”游戏相关指令。
+
+    join:
+      description: 加入一局游戏。当前群聊已在进行游戏时无法使用。
+
+    quit:
+      description: 退出游戏。当前群聊已在进行游戏时无法使用。
+
+    start:
+      description: 开始一局游戏。游戏需要至少三人参加才能进行，且只有第一个加入的玩家可以开始。
+
+    stop:
+      description: 强制结束一局游戏。只有第一个加入的玩家可以结束。
+
+    fight:
+      description: 参与游戏的玩家在轮到自己行动时使用，指定与一个玩家单挑。
+
+    gang-fight:
+      description: 参与游戏的玩家在轮到自己行动时使用，指定群殴一个玩家。
+
+    participate:
+      description: 参与游戏的玩家在其他人发起群殴时使用，表示自己参与群殴。
+
+    not-participate:
+      description: 参与游戏的玩家在其他人发起群殴时使用，表示自己不参与群殴。
+
+    standby:
+      description: 参与游戏的玩家在轮到自己行动时使用，表示抬头望天（过牌）。
+
+    replace:
+      description: 参与游戏的玩家在轮到自己行动时使用，表示弃牌重抽。
