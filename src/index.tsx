@@ -1,13 +1,20 @@
 import { Context, h, Schema, Session } from "koishi";
 import {} from "@koishijs/cache";
 import { Game, GameState, checkInGame, newGame, newPlayer } from "./game";
+import { config } from "process";
 
 export const name = "come-on-bite-me";
 export const inject = ["cache"];
 
-export interface Config {}
+export interface Config {
+  gameStartAuthority: number;
+}
 
-export const Config: Schema<Config> = Schema.object({});
+export const Config: Schema<Config> = Schema.object({
+  gameStartAuthority: Schema.number()
+    .default(2)
+    .description("非游戏创建者开始游戏所需的最低权限。"),
+});
 
 function buildReplyAndAt(session: Session, message: h): h {
   return (
@@ -17,7 +24,7 @@ function buildReplyAndAt(session: Session, message: h): h {
   );
 }
 
-export async function apply(ctx: Context) {
+export async function apply(ctx: Context, config: Config) {
   ctx.i18n.define("zh-CN", require("./locales/zh-CN"));
 
   ctx.command("cobm.join").action(async ({ session }) => {
@@ -62,7 +69,10 @@ export async function apply(ctx: Context) {
 
     // Check if the player is in the game.
     if (game === undefined || !checkInGame(game, session.userId))
-      return buildReplyAndAt(session, <i18n path=".gameNotJoined" />);
+      return buildReplyAndAt(
+        session,
+        <i18n path="commands.cobm.messages.gameNotJoined" />
+      );
 
     // Check if game already started.
     if (game.currentState !== GameState.joining)
@@ -73,7 +83,7 @@ export async function apply(ctx: Context) {
       game.players.findIndex((player) => player.id === session.userId)
     );
 
-    // Abort game if everyone quit,
+    // Abort game if everyone quit.
     if (game.players.length === 0) {
       await ctx.cache.delete("cobm_games", session.cid);
       return buildReplyAndAt(session, <i18n path=".gameQuitAndAbort" />);
@@ -82,6 +92,39 @@ export async function apply(ctx: Context) {
     // Save game if anyone left.
     await ctx.cache.set("cobm_games", session.cid, game);
     return buildReplyAndAt(session, <i18n path=".gameQuit" />);
+  });
+
+  ctx.command("cobm.start").action(async ({ session }) => {
+    // Check if user in game.
+    const game = await ctx.cache.get("cobm_games", session.cid);
+    if (game === undefined || !checkInGame(game, session.userId))
+      return buildReplyAndAt(
+        session,
+        <i18n path="commands.cobm.messages.gameNotJoined" />
+      );
+
+    // Check if user has authority.
+    if (
+      (await session.getUser<"authority">()).authority <
+        config.gameStartAuthority &&
+      game.players[0].id !== session.userId
+    )
+      return buildReplyAndAt(session, <i18n path=".notAllowed" />);
+
+    // Start the game
+    game.currentState = GameState.started;
+    await ctx.cache.set("cobm_games", session.cid, game);
+    return buildReplyAndAt(
+      session,
+      <>
+        <i18n path=".gameStarted" />
+        <p>
+          <i18n path="commands.cobm.messages.yourTurnToAct">
+            {session.userId}
+          </i18n>
+        </p>
+      </>
+    );
   });
 }
 

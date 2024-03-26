@@ -13,13 +13,16 @@ commands:
     quit:
       description: 退出游戏。当前群聊已在进行游戏时无法使用。
       messages:
-        gameNotJoined: "你还没有加入游戏。"
         gameQuit: "你已退出游戏，当前参加人数：{0}"
         gameQuitAndAbort: "你已退出游戏，游戏终止。"
         gameAlreadyStarted: "游戏已经开始，无法退出。"
 
     start:
       description: 开始一局游戏。游戏需要至少三人参加才能进行，且只有第一个加入的玩家可以开始。
+      messages:
+        notAllowed: 只有 Bot 管理员或游戏创建者可以开始游戏。
+        playerTooFew: 至少需要 3 人参与才能开始游戏，当前有 {0} 人。
+        gameStarted: 游戏开始！
 
     stop:
       description: 强制结束一局游戏。只有第一个加入的玩家可以结束。
@@ -44,3 +47,5 @@ commands:
 
     messages:
       pleaseUseInGuilds: 请在群聊中使用。
+      gameNotJoined: "你还没有加入游戏。"
+      yourTurnToAct: 轮到 <at id={0} /> 行动。
