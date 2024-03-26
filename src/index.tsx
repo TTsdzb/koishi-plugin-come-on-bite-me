@@ -95,8 +95,14 @@ export async function apply(ctx: Context, config: Config) {
   });
 
   ctx.command("cobm.start").action(async ({ session }) => {
-    // Check if user in game.
+    // Verify if is used in guilds
+    if (!session.guildId)
+      return <i18n path="commands.cobm.messages.pleaseUseInGuilds" />;
+
+    // Get current game of channel.
     const game = await ctx.cache.get("cobm_games", session.cid);
+
+    // Check if user in game.
     if (game === undefined || !checkInGame(game, session.userId))
       return buildReplyAndAt(
         session,
