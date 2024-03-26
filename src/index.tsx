@@ -1,7 +1,6 @@
 import { Context, h, Schema, Session } from "koishi";
 import {} from "@koishijs/cache";
 import { Game, GameState, checkInGame, newGame, newPlayer } from "./game";
-import { config } from "process";
 
 export const name = "come-on-bite-me";
 export const inject = ["cache"];
@@ -16,12 +15,33 @@ export const Config: Schema<Config> = Schema.object({
     .description("非游戏创建者开始游戏所需的最低权限。"),
 });
 
+/**
+ * Wraps a given message segment with a quote and an at.
+ * @param session Session of the command
+ * @param message Message to send
+ * @returns A message segment contains a quote, an at, and the given message
+ */
 function buildReplyAndAt(session: Session, message: h): h {
   return (
     <>
       <quote id={session.messageId} /> <at id={session.userId} /> {message}
     </>
   );
+}
+
+/**
+ * Generate the ranking of a game, usually used when a game terminates.
+ * @param game Game from which we get the rank
+ * @returns Message segments represent the ranking of the game
+ */
+function getGameRank(game: Game): h[] {
+  return game.players
+    .sort((a, b) => b.score - a.score)
+    .map((player) => (
+      <p>
+        {player.name}: {player.score}
+      </p>
+    ));
 }
 
 export async function apply(ctx: Context, config: Config) {
@@ -128,6 +148,43 @@ export async function apply(ctx: Context, config: Config) {
           <i18n path="commands.cobm.messages.yourTurnToAct">
             {session.userId}
           </i18n>
+        </p>
+      </>
+    );
+  });
+
+  ctx.command("cobm.stop").action(async ({ session }) => {
+    // Verify if is used in guilds
+    if (!session.guildId)
+      return <i18n path="commands.cobm.messages.pleaseUseInGuilds" />;
+
+    // Get current game of channel.
+    const game = await ctx.cache.get("cobm_games", session.cid);
+
+    // Check if user in game.
+    if (game === undefined || !checkInGame(game, session.userId))
+      return buildReplyAndAt(
+        session,
+        <i18n path="commands.cobm.messages.gameNotJoined" />
+      );
+
+    // Check if user has authority.
+    if (
+      (await session.getUser<"authority">()).authority <
+        config.gameStartAuthority &&
+      game.players[0].id !== session.userId
+    )
+      return buildReplyAndAt(session, <i18n path=".notAllowed" />);
+
+    // End a game.
+    await ctx.cache.delete("cobm_games", session.cid);
+    return buildReplyAndAt(
+      session,
+      <>
+        <i18n path=".gameStopped" />
+        <p>
+          <i18n path="commands.cobm.messages.gameRank" />
+          {getGameRank(game)}
         </p>
       </>
     );

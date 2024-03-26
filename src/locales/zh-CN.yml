@@ -26,6 +26,9 @@ commands:
 
     stop:
       description: 强制结束一局游戏。只有第一个加入的玩家可以结束。
+      messages:
+        notAllowed: 只有 Bot 管理员或游戏创建者可以结束游戏。
+        gameStopped: 游戏结束。
 
     fight:
       description: 参与游戏的玩家在轮到自己行动时使用，指定与一个玩家单挑。
@@ -49,3 +52,4 @@ commands:
       pleaseUseInGuilds: 请在群聊中使用。
       gameNotJoined: "你还没有加入游戏。"
       yourTurnToAct: 轮到 <at id={0} /> 行动。
+      gameRank: 本轮游戏的排名如下：
